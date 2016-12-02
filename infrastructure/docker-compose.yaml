@@ -1,0 +1,68 @@
+version: '2'
+services:
+
+  cache:
+    #build: ./custom/memcached
+    image: ciandtsoftware/memcached:acquia-latest
+    container_name: ${ACQUIA_SUBSCRIPTION}-memcached
+    env_file: ../conf/memcached.env
+    tty: true
+    stdin_open: true
+    # limit memory to 64MB (value must be in bytes)
+    mem_limit: 67108864
+    # limit swap to 128MB (value must be in bytes)
+    memswap_limit: 134217728
+
+  database:
+    #build: ./custom/percona
+    image: ciandtsoftware/percona:acquia-latest
+    container_name: ${ACQUIA_SUBSCRIPTION}-percona
+    env_file: ../conf/percona.env
+    tty: true
+    stdin_open: true
+    # limit memory to 1GB (value must be in bytes)
+    mem_limit: 1073741824
+    # limit swap to 2GB (value must be in bytes)
+    memswap_limit: 2147483648
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${ACQUIA_SUBSCRIPTION}
+    volumes:
+      # mount database store
+      - ${DATABASE_FOLDER}:/var/lib/mysql
+
+  search:
+    #build: ./custom/solr
+    image: ciandtsoftware/solr:acquia-latest
+    container_name: ${ACQUIA_SUBSCRIPTION}-solr
+    env_file: ../conf/solr.env
+    tty: true
+    stdin_open: true
+    # limit memory to 256MB (value must be in bytes)
+    mem_limit: 268435456
+    # limit swap to 512MB (value must be in bytes)
+    memswap_limit: 536870912
+
+  web:
+    #build: ./custom/php
+    image: ciandtsoftware/php:acquia-latest
+    container_name: ${ACQUIA_SUBSCRIPTION}-php
+    env_file: ../conf/php.env
+    tty: true
+    stdin_open: true
+    # limit memory to 1GB (value must be in bytes)
+    mem_limit: 1073741824
+    # limit swap to 2GB (value must be in bytes)
+    memswap_limit: 2147483648
+    environment:
+      - ACQUIA_SUBSCRIPTION=${ACQUIA_SUBSCRIPTION}
+    links:
+      - cache
+      - search
+      - database
+    volumes:
+      # mount files
+      - ${FILES_FOLDER}:/mnt/gfs/${ACQUIA_SUBSCRIPTION}dev
+      - ${FILES_FOLDER}:/mnt/gfs/${ACQUIA_SUBSCRIPTION}.dev
+      # mount code
+      - ${CODE_FOLDER}:/var/www/html
