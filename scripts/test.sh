@@ -20,6 +20,7 @@ TR=$(which tr)
 ## variables
 # transform subscription to lower case
 export ACQUIA_SUBSCRIPTION=$("${TR}" '[:upper:]' '[:lower:]' <<< "${ACQUIA_SUBSCRIPTION}")
+# remove hyphens
 export PROJECT_NAME="${ACQUIA_SUBSCRIPTION//[-]/}"
 
 # simple tests start
