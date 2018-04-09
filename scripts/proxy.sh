@@ -18,6 +18,7 @@ TR=$(which tr)
 ## variables
 # transform subscription to lower case
 export ACQUIA_SUBSCRIPTION=$("${TR}" '[:upper:]' '[:lower:]' <<< "${ACQUIA_SUBSCRIPTION}")
+export PROJECT_NAME="${ACQUIA_SUBSCRIPTION//[-]/}"
 
 "${CAT}" << EOM
   _______________________________________________________________________________
@@ -152,4 +153,4 @@ EOM
 fi
 
 # connect nginx proxy to the project network
-"${DOCKER}" network connect ""${ACQUIA_SUBSCRIPTION}"_default" nginx >/dev/null 2>&1 || true # hence the command still not support -f (force), ignoring the output
+"${DOCKER}" network connect ""${PROJECT_NAME}"_default" nginx >/dev/null 2>&1 || true # hence the command still not support -f (force), ignoring the output

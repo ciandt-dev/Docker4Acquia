@@ -20,6 +20,7 @@ TR=$(which tr)
 ## variables
 # transform subscription to lower case
 export ACQUIA_SUBSCRIPTION=$("${TR}" '[:upper:]' '[:lower:]' <<< "${ACQUIA_SUBSCRIPTION}")
+export PROJECT_NAME="${ACQUIA_SUBSCRIPTION//[-]/}"
 
 # simple tests start
 echo "  _______________________________________________________________________________"
@@ -30,7 +31,7 @@ echo -e "\n  -- Docker Test \n\n  Please wait..."
 readonly DOCKER_MEMCACHED_CONTAINER_IP=$(\
   "${DOCKER}" inspect \
               --format \
-                "{{ .NetworkSettings.Networks.${ACQUIA_SUBSCRIPTION}_default.IPAddress }}" \
+                "{{ .NetworkSettings.Networks.${PROJECT_NAME}_default.IPAddress }}" \
               --type \
                 container \
               ""${ACQUIA_SUBSCRIPTION}"-memcached."${ENVIRONMENT}"" \
